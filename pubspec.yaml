@@ -35,8 +35,7 @@ dependencies:
   firebase_storage: ^10.3.9
   flutter:
     sdk: flutter
-  gallery_saver: ^2.3.2
-  path_provider: ^2.0.9
+  path_provider: ^2.0.11
 
 dev_dependencies:
   flutter_lints: ^2.0.0

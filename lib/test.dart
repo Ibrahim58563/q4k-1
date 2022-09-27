@@ -5,8 +5,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:gallery_saver/gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:q4k/firebase_api.dart';
+
+import 'firebase_file.dart';
+import 'image_page.dart';
 
 class test extends StatefulWidget {
   const test({super.key});
@@ -17,7 +20,7 @@ class test extends StatefulWidget {
 
 class _testState extends State<test> {
   // 1- crating firebase
-  late Future<ListResult> futureFiles;
+  late Future<List<FirebaseFile>> futureFiles;
   Map<int, double> downloadProgress = {};
 
   // final island = FirebaseStorage.instance.ref();
@@ -28,7 +31,7 @@ class _testState extends State<test> {
   @override
   void initState() {
     super.initState();
-    futureFiles = FirebaseStorage.instance.ref('/files').listAll();
+    futureFiles = FirebaseApi.listAll('files/');
   }
 
   @override
@@ -37,104 +40,99 @@ class _testState extends State<test> {
       appBar: AppBar(
         title: Text('Download'),
       ),
-      body: FutureBuilder<ListResult>(
-        future: futureFiles,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final files = snapshot.data!.items;
-            return ListView.builder(
-              itemBuilder: (context, index) {
-                final file = files[index];
-                double? progress = downloadProgress[index];
-                return ListTile(
-                  title: Text(file.name),
-                  subtitle: progress != null
-                      ? LinearProgressIndicator(
-                          value: progress,
-                          backgroundColor: Colors.blueAccent,
-                        )
-                      : null,
-                  trailing: IconButton(
-                    icon: Icon(
-                      Icons.download,
-                      color: Colors.black,
-                    ),
-                    onPressed: () => downloadFile(index, file),
-                  ),
-                );
-              },
-              itemCount: files.length,
-            );
-          } else if (snapshot.hasError) {
-            return const Center(
-              child: Text('Error occurred'),
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
-      ),
+      body: FutureBuilder<List<FirebaseFile>>(
+          future: futureFiles,
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return Center(child: CircularProgressIndicator());
+              default:
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Some error occured'),
+                  );
+                } else {
+                  final files = snapshot.data!;
+                  return Column(
+                    children: [
+                      buildHeader(files.length),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      Expanded(
+                          child: ListView.builder(
+                        itemBuilder: (context, index) {
+                          final file = files[index];
+
+                          return buildFile(context, file);
+                        },
+                        itemCount: files.length,
+                      ))
+                    ],
+                  );
+                }
+            }
+          }),
     );
   }
 
+  Widget buildFile(BuildContext context, FirebaseFile file) => ListTile(
+        leading: ClipOval(
+          child: Image.network(
+            file.url,
+            width: 52,
+            height: 52,
+            fit: BoxFit.cover,
+          ),
+        ),
+        title: Text(
+          file.name,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            decoration: TextDecoration.underline,
+            color: Colors.blue,
+          ),
+        ),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => ImagePage(
+            file: file,
+          ),
+        )),
+      );
+
+  Widget buildHeader(int length) => ListTile(
+        tileColor: Colors.blue,
+        title: Text(
+          '$length Files',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.white,
+          ),
+        ),
+        leading: Container(
+          width: 52,
+          height: 52,
+          child: Icon(
+            Icons.copy,
+            color: Colors.white,
+          ),
+        ),
+      );
+
   // trying documentation
   Future downloadFile(int index, Reference ref) async {
-    final ref = FirebaseStorage.instance.ref();
+    //   final ref = FirebaseStorage.instance.ref();
 
-    final dir = await getApplicationDocumentsDirectory();
-    final path = '${dir.path}/${ref.name}';
-    final file = File(path);
+    //   final dir = await getApplicationDocumentsDirectory();
+    //   final file = File('${dir.path}/${ref.name}');
+    //   await ref.writeToFile(file);
 
-    final DownloadTask = ref.writeToFile(file);
-    DownloadTask.snapshotEvents.listen((taskSnapshot) {
-      switch (taskSnapshot.state) {
-        case TaskState.running:
-          // TODO: Handle this case.
-          break;
-        case TaskState.paused:
-          // TODO: Handle this case.
-          break;
-        case TaskState.success:
-          // TODO: Handle this case.
-          break;
-        case TaskState.canceled:
-          // TODO: Handle this case.
-          break;
-        case TaskState.error:
-          // TODO: Handle this case.
-          break;
-      }
-    });
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //         content: Text(
+    //       'Downloaded ${ref.name}',
+    //     )),
+    //   );
   }
-
-  // Future downloadFile(int index, Reference ref) async {
-  //   final url = await ref.getDownloadURL();
-  //   final tempDir = await getTemporaryDirectory();
-  //   final path = '${tempDir.path}/${ref.name}';
-  //   await Dio().download(url, path, onReceiveProgress: (recevied, total) {
-  //     double progress = recevied / total;
-
-  //     setState(() {
-  //       downloadProgress[index] = progress;
-  //     });
-  //   });
-
-  //   if (url.contains('.png')) {
-  //     await GallerySaver.saveImage(path, toDcim: true);
-  //   } else if (url.contains('.jpg')) {
-  //     await GallerySaver.saveImage(
-  //       path,
-  //       toDcim: true,
-  //     );
-  //   }
-
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //         content: Text(
-  //       'Downloaded ${ref.name}',
-  //     )),
-  //   );
-  // }
 }
