@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
+import 'constants.dart';
+
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -12,10 +14,18 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
-    const primaryColor = const Color(0xff17234D);
-    const lightColor = const Color(0xffF8F8FF);
-    const goldenColor = const Color(0xff14BCB8);
-
+    List<String> section_name = [
+      'IT',
+      'CS',
+      'IS',
+      'MM',
+    ];
+    List<IconData> icon_name = [
+      Icons.lan,
+      Icons.laptop_sharp,
+      Icons.data_array_rounded,
+      Icons.display_settings,
+    ];
     return Scaffold(
       backgroundColor: primaryColor,
       // appBar: PreferredSize(
@@ -53,51 +63,63 @@ class _MainScreenState extends State<MainScreen> {
           SizedBox(
             height: 30,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-            child: Container(
-              decoration: BoxDecoration(
-                color: goldenColor,
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              height: 100,
-              width: double.infinity,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: primaryColor,
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: Icon(
-                        Icons.lan,
-                        size: 60,
+          SizedBox(
+            width: 400,
+            height: 1000,
+            child: ListView.builder(
+              itemCount: section_name.length,
+              itemBuilder: (context, index) => Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: primaryColor,
+                      borderRadius: BorderRadius.circular(12.0),
+                      border: Border.all(
                         color: goldenColor,
+                        width: 2,
+                        style: BorderStyle.solid,
+                      )),
+                  height: 100,
+                  width: double.infinity,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: primaryColor,
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: Icon(
+                            icon_name[index],
+                            size: 60,
+                            color: goldenColor,
+                          ),
+                        ),
                       ),
-                    ),
+                      Text(
+                        section_name[index],
+                        style: TextStyle(
+                          color: goldenColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          color: goldenColor,
+                          size: 30,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    'IT',
-                    style: TextStyle(
-                      color: primaryColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.arrow_forward_ios,
-                      color: primaryColor,
-                      size: 30,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),

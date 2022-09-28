@@ -1,9 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:q4k/it_screen.dart';
+import 'package:q4k/cs/cs_screen.dart';
+import 'package:q4k/is/is_screen.dart';
 import 'package:q4k/main_screen.dart';
+import 'package:q4k/mm/mm.dart';
 import 'package:q4k/test.dart';
 import 'firebase_options.dart';
+import 'it/it_screen.dart';
+import 'it/web_programming.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +35,7 @@ class MyApp extends StatelessWidget {
         future: _initializeFirebase(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return MainScreen();
+            return IT();
           }
           return const Center(
             child: CircularProgressIndicator(),
