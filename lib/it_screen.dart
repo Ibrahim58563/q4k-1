@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:q4k/test.dart';
+import 'package:q4k/constants.dart';
 
 class IT extends StatefulWidget {
   const IT({super.key});
@@ -13,9 +14,6 @@ class IT extends StatefulWidget {
 class _ITState extends State<IT> {
   @override
   Widget build(BuildContext context) {
-    const primaryColor = const Color(0xff253D5B);
-    const lightColor = const Color(0xffF8F8FF);
-    const goldenColor = const Color(0xffC9A959);
     List<String> section_name = ['PDF', 'Audio', 'jkldsf'];
     List<String> pictures_url = [
       'https://www.pngitem.com/pimgs/m/534-5347598_pdf-icon-png-transparent-png.png',
