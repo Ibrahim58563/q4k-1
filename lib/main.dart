@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:q4k/it_screen.dart';
 import 'package:q4k/main_screen.dart';
 import 'package:q4k/test.dart';
-
 import 'firebase_options.dart';
 
 void main() async {
@@ -12,7 +11,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(MaterialApp(
-    home: IT(),
+    home: MainScreen(),
     debugShowCheckedModeBanner: false,
   ));
 }
@@ -32,7 +31,7 @@ class MyApp extends StatelessWidget {
         future: _initializeFirebase(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return IT();
+            return MainScreen();
           }
           return const Center(
             child: CircularProgressIndicator(),

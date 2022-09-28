@@ -6,10 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:q4k/firebase_api.dart';
-
-import 'firebase_file.dart';
-import 'image_page.dart';
 
 class test extends StatefulWidget {
   const test({super.key});
@@ -20,7 +16,7 @@ class test extends StatefulWidget {
 
 class _testState extends State<test> {
   // 1- crating firebase
-  late Future<List<FirebaseFile>> futureFiles;
+  late Future<ListResult> futureFiles;
   Map<int, double> downloadProgress = {};
 
   // final island = FirebaseStorage.instance.ref();
@@ -31,28 +27,30 @@ class _testState extends State<test> {
   @override
   void initState() {
     super.initState();
-    futureFiles = FirebaseApi.listAll('files/');
+    futureFiles = FirebaseStorage.instance
+        .ref('/material/algorithm_design_and_analysis/pdf')
+        .listAll();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Download'),
+        title: const Text('Download'),
       ),
-      body: FutureBuilder<List<FirebaseFile>>(
+      body: FutureBuilder<ListResult>(
           future: futureFiles,
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               default:
                 if (snapshot.hasError) {
-                  return Center(
+                  return const Center(
                     child: Text('Some error occured'),
                   );
                 } else {
-                  final files = snapshot.data!;
+                  final files = snapshot.data!.items;
                   return Column(
                     children: [
                       buildHeader(files.length),
@@ -64,7 +62,9 @@ class _testState extends State<test> {
                         itemBuilder: (context, index) {
                           final file = files[index];
 
-                          return buildFile(context, file);
+                          return ListTile(
+                            title: Text(file.name),
+                          );
                         },
                         itemCount: files.length,
                       ))
@@ -76,35 +76,11 @@ class _testState extends State<test> {
     );
   }
 
-  Widget buildFile(BuildContext context, FirebaseFile file) => ListTile(
-        leading: ClipOval(
-          child: Image.network(
-            file.url,
-            width: 52,
-            height: 52,
-            fit: BoxFit.cover,
-          ),
-        ),
-        title: Text(
-          file.name,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            decoration: TextDecoration.underline,
-            color: Colors.blue,
-          ),
-        ),
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ImagePage(
-            file: file,
-          ),
-        )),
-      );
-
   Widget buildHeader(int length) => ListTile(
         tileColor: Colors.blue,
         title: Text(
           '$length Files',
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
             color: Colors.white,
@@ -113,7 +89,7 @@ class _testState extends State<test> {
         leading: Container(
           width: 52,
           height: 52,
-          child: Icon(
+          child: const Icon(
             Icons.copy,
             color: Colors.white,
           ),
